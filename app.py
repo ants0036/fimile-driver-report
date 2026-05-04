@@ -80,8 +80,8 @@ if st.button("fetch from db"):
 if "data" in st.session_state:
   st.write(st.session_state.data)
 
-if st.button("load test data"):
-  st.session_state.data = pd.read_csv("testdata.csv").head()
+#if st.button("load test data"):
+#  st.session_state.data = pd.read_csv("testdata.csv").head()
 
 if st.button("load driver list"):
   st.session_state.driver_list = pd.DataFrame(fetch_driver_list())
