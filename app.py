@@ -69,12 +69,13 @@ def fetch_driver_list():
   return response.json()["assignee"]
 
 # start and end date picker
-start_date = st.date_input("pick start date")
-end_date = st.date_input("pick end date")
+start_date = st.date_input("pick start date for package numbers")
+end_date = st.date_input("pick end date for package numbers")
 st.write("start date:", start_date, "end date:", end_date) 
 
 # button to fetch from db & write the response 
 # use session state so it doesn't rerun 
+st.write("after selecting dates, fetch packages & drivers")
 if st.button("fetch from db"):
   st.session_state.data = pd.DataFrame(fetch_data(start_date, end_date))
 if "data" in st.session_state:
@@ -88,12 +89,14 @@ if st.button("load driver list"):
 if "driver_list" in st.session_state:
   st.write(st.session_state.driver_list)
 
+st.write("after loading packages and drivers")
 if st.button("parse driver names"):
   placeholder = st.empty()
   st.session_state.data["driver name"] = st.session_state.data.apply(parse_driver_name, axis = 1)
   st.session_state.data["dsp"] = st.session_state.data.apply(parse_dsp, axis = 1)
   st.write(st.session_state.data)
 
+st.write("after parsing driver names")
 filter_dsp = st.text_input("dsp filter")
 if filter_dsp:
   st.write(st.session_state.data[st.session_state.data['dsp'] == filter_dsp])
