@@ -56,6 +56,12 @@ def parse_driver_name(row):
       placeholder.write(result.iloc[0]["name"])
       return result.iloc[0]["name"]
 
+def parse_dsp(row):
+  split = row["driver name"].split("-")
+  dsp = split[0].strip()
+  placeholder.write(dsp)
+  return dsp
+
 def fetch_driver_list():
   headers = {"Authorization": st.secrets.API_TOKEN}
   url = "https://isp.beans.ai/enterprise/v1/lists/assignees"
@@ -75,7 +81,7 @@ if "data" in st.session_state:
   st.write(st.session_state.data)
 
 if st.button("load test data"):
-  st.session_state.data = pd.read_csv("testdata.csv")
+  st.session_state.data = pd.read_csv("testdata.csv").head()
 
 if st.button("load driver list"):
   st.session_state.driver_list = pd.DataFrame(fetch_driver_list())
@@ -85,4 +91,9 @@ if "driver_list" in st.session_state:
 if st.button("parse driver names"):
   placeholder = st.empty()
   st.session_state.data["driver name"] = st.session_state.data.apply(parse_driver_name, axis = 1)
+  st.session_state.data["dsp"] = st.session_state.data.apply(parse_dsp, axis = 1)
   st.write(st.session_state.data)
+
+filter_dsp = st.text_input("dsp filter")
+if filter_dsp:
+  st.write(st.session_state.data[st.session_state.data['dsp'] == filter_dsp])
