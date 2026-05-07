@@ -57,10 +57,13 @@ def parse_driver_name(row):
       return result.iloc[0]["name"]
 
 def parse_dsp(row):
-  split = row["driver name"].split("-")
-  dsp = split[0].strip()
-  placeholder.write(dsp)
-  return dsp
+  if "GIA Group" in row["driver name"]:
+    return "GIA"
+  else: 
+    split = row["driver name"].split("-")
+    dsp = split[0].strip()
+    placeholder.write(dsp)
+    return dsp
 
 def fetch_driver_list():
   headers = {"Authorization": st.secrets.API_TOKEN}
@@ -84,6 +87,10 @@ if "data" in st.session_state:
 #if st.button("load test data"):
 #  st.session_state.data = pd.read_csv("testdata.csv").head()
 
+uploaded_file = st.file_uploader("Choose a file", type = "csv")
+if uploaded_file is not None:
+  st.session_state.data = pd.read_csv(uploaded_file)
+
 if st.button("load driver list"):
   st.session_state.driver_list = pd.DataFrame(fetch_driver_list())
 if "driver_list" in st.session_state:
@@ -99,4 +106,10 @@ if st.button("parse driver names"):
 st.write("after parsing driver names")
 filter_dsp = st.text_input("dsp filter")
 if filter_dsp:
-  st.write(st.session_state.data[st.session_state.data['dsp'] == filter_dsp])
+  filtered = st.session_state.data[st.session_state.data['dsp'] == filter_dsp]
+  st.write(filtered)
+  st.download_button(
+  label="Download CSV",
+  data=filtered.to_csv(index=False),
+  file_name="filtered_dsp.csv",
+  mime="text/csv")
