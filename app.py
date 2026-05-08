@@ -25,7 +25,7 @@ def fetch_data(start_date, end_date):
     # instead of cur = conn.cursor() because with automatically closes
     with conn.cursor() as cur:
       sql = """
-          SELECT tracking_number, router_messages, latest_router_description, latest_router_times
+          SELECT tracking_number, router_messages, latest_router_description, latest_router_time
           FROM transit_third_party_caches
           WHERE latest_router_time >= %s AND latest_router_time < %s
       """
