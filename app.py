@@ -25,9 +25,9 @@ def fetch_data(start_date, end_date):
     # instead of cur = conn.cursor() because with automatically closes
     with conn.cursor() as cur:
       sql = """
-          SELECT DISTINCT tracking_number, router_messages, latest_router_description, latest_router_time
+          SELECT tracking_number, router_messages, latest_router_description, latest_router_times
           FROM transit_third_party_caches
-          WHERE created_at >= %s AND created_at < %s
+          WHERE latest_router_time >= %s AND latest_router_time < %s
       """
       # convert to datetime object 
       start_dt = datetime.combine(start_date, time.min)
@@ -72,8 +72,8 @@ def fetch_driver_list():
   return response.json()["assignee"]
 
 # start and end date picker
-start_date = st.date_input("pick start date for package numbers")
-end_date = st.date_input("pick end date for package numbers")
+start_date = st.date_input("pick delivery start date for package numbers")
+end_date = st.date_input("pick delivery end date for package numbers")
 st.write("start date:", start_date, "end date:", end_date) 
 
 # button to fetch from db & write the response 
@@ -101,6 +101,7 @@ if st.button("parse driver names"):
   placeholder = st.empty()
   st.session_state.data["driver name"] = st.session_state.data.apply(parse_driver_name, axis = 1)
   st.session_state.data["dsp"] = st.session_state.data.apply(parse_dsp, axis = 1)
+  st.session_state.data = st.session_state.data.drop(columns=['router_messages'])
   st.write(st.session_state.data)
 
 st.write("after parsing driver names")
